@@ -1,0 +1,24 @@
+{
+  "name": "tweet2time",
+  "version" : "0.0.1",
+  "scripts": {
+    "start": "app.js",
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "ntwitter":"latest",
+    "express": "3.3.4",
+    "faye": "0.8.6"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-develop": "~0.1.1",
+    "grunt-contrib-watch":"~0.4.4",
+    "grunt-contrib-compass":"~0.2.0",
+    "mocha": "latest"
+  },
+  "engines": {
+      "node": "0.8.x"
+    , "npm":  "1.1.x"
+  }
+}
