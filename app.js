@@ -15,10 +15,18 @@ app.use(express.static(__dirname + '/public'))
 var server = http.createServer(app)
 server.listen(3000)
 
-getTweets("espn", "sports", function (tweetfeed, tag) {
+bayes = require("./bayesClassifier.js")
+var nbc = bayes()
+getTweets("espn", nbc, "sports") 
+//getTweets("FoxNews", "conservative", nbc.learn)
+//getTweets("NPR", "liberal", nbc.learn)
+
+//getTweets("BBCNews", nbc.process)
+          /*
+          function (tweetfeed, tag) {
     console.log(tweetfeed)
     console.log(tag)
-})
+})*/
 
 /*
 //getTweets("espn", nbc.learn) //nbc.learn(dataset)
@@ -31,7 +39,7 @@ nbc.process(getTweets("BBCWorld"))
 */
 
 
-function getTweets (user, tag, callback) {
+function getTweets (user, callback, tag) {
     var twitterConfig = require('./config/twitterKeys.json')
         , twit = new ntwitter(twitterConfig)
 
@@ -54,10 +62,13 @@ function getTweets (user, tag, callback) {
                 "geo": geo,
                 "screen_name": tweet.user.screen_name,
             }
+                if (tag) callback.learn(processedTweet, tag)
+                else callback.process(processedTweet)
             tweetFeed.push(processedTweet)
-            if (data.length==++count) {
-                callback(tweetFeed, tag)
-            }
+            //if (data.length==++count) {
+                //if (tag) callback.learn(tweetFeed, tag)
+                //else callback.process(tweetFeed)
+            //}
         })
     })
 }
