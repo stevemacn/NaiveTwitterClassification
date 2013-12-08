@@ -3,9 +3,10 @@ var ntwitter = require('ntwitter')
     , faye = require('faye')
     , http = require('http')
     , config = require('./config/config')
+    , count
     , params = {
         screen_name: '',
-        count: 15,
+        count: 5,
         include_rts: true
     }
     
@@ -17,19 +18,8 @@ server.listen(3000)
 
 bayes = require("./bayesClassifier.js")
 var nbc = bayes()
-getTweets("espn", nbc, "sports") 
-//getTweets("FoxNews", "conservative", nbc.learn)
-//getTweets("NPR", "liberal", nbc.learn)
-
-//getTweets("BBCNews", nbc.process)
-          /*
-          function (tweetfeed, tag) {
-    console.log(tweetfeed)
-    console.log(tag)
-})*/
 
 /*
-//getTweets("espn", nbc.learn) //nbc.learn(dataset)
 nbc.learn(getTweets("espn"))
 nbc.learn(getTweets("FoxNews"))
 nbc.learn(getTweets("NPR"))
@@ -38,6 +28,34 @@ nbc.process(getTweets("BBCNews"))
 nbc.process(getTweets("BBCWorld"))
 */
 
+/* These two functions are the only functions that 
+ * need to be changed to learn and process tags 
+ */
+
+var startProcessing = function () {
+    getTweets("BBCNews", nbc)
+}
+
+var startTraining = function (process) {
+    count = 0
+    articlesLearned = 3
+    getTweets("espn", nbc, "sports") 
+    getTweets("FoxNews", nbc, "conservative")
+    getTweets("NPR", nbc, "liberal")
+}
+
+startTraining()
+
+/*
+ * The following two utility functions handle twitter parsing
+ */
+
+function twitterCallback (tag) {
+    nbc.displayResults(tag)
+    if (++count == articlesLearned) {
+        startProcessing() 
+    }
+} 
 
 function getTweets (user, callback, tag) {
     var twitterConfig = require('./config/twitterKeys.json')
@@ -48,7 +66,6 @@ function getTweets (user, callback, tag) {
     twit.getUserTimeline(params, function (err,data) {
         if (err) return null
         var tweetFeed = []
-            , count = 0
 
         data.forEach(function(tweet) {
               
@@ -65,10 +82,8 @@ function getTweets (user, callback, tag) {
                 if (tag) callback.learn(processedTweet, tag)
                 else callback.process(processedTweet)
             tweetFeed.push(processedTweet)
-            //if (data.length==++count) {
-                //if (tag) callback.learn(tweetFeed, tag)
-                //else callback.process(tweetFeed)
-            //}
         })
+        //Indicate globally that another handle has been learned or processed.
+        if (tweetFeed.length == data.length) twitterCallback(tag)
     })
 }
