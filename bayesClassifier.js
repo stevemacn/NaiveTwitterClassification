@@ -24,6 +24,7 @@ Naivebayes.prototype.initCategory = function(category) {
     this.wordCount[category] = 0
     this.wordFreqCount = {}
     this.categories[category]=category
+    console.log(this.categories)
     return false
 }
 
@@ -31,7 +32,7 @@ Naivebayes.prototype.learn = function (tweet, tag) {
     
     var tokens = this.tokenizeText(tweet)
     
-    console.log(tokens)
+    console.log(tweet)
 
     if (this.initCategory(tag)) console.log(tag+ " already exists")
     else console.log("New category: "+tag)
@@ -39,9 +40,26 @@ Naivebayes.prototype.learn = function (tweet, tag) {
     this.docCount[tag]++
     this.totalDocCount++
     
+    var self = this 
+    
     tokens.forEach(function (token) {
+        //add to the vocabulary
+        self.vocabulary[token] = true
+        self.vocabSize++
+
+        //add to the frequency count    
+        if (!self.wordFreqCount[tag]) self.wordFreqCount[tag] = {}
+        if (!self.wordFreqCount[tag][token]) self.wordFreqCount[tag][token]=1
+        else self.wordFreqCount[tag][token]++
+
+
+        //category[token]++
         
     })
+    //    console.log(this.vocabulary)
+    //if (!self.wordFreqCount[tag]) self.wordFreqCount[tag]={tag:0} 
+    //self.wordFreqCount[tag][token]++
+    console.log(this.wordFreqCount)
     
     console.log(tokens)
 
