@@ -15,16 +15,19 @@ function Naivebayes () {
     this.docCount = {}
     this.wordCount = {}
     this.wordFreqCount = {}
+}
 
+Naivebayes.prototype.displayResults = function (tag) {
+    console.log(this.wordCount)
+    //console.log(this.wordFreqCount)
 }
 
 Naivebayes.prototype.initCategory = function(category) {
     if (this.categories[category]) return true
     this.docCount[category] = 0
     this.wordCount[category] = 0
-    this.wordFreqCount = {}
+    this.wordFreqCount[category] = {}
     this.categories[category]=category
-    console.log(this.categories)
     return false
 }
 
@@ -32,7 +35,7 @@ Naivebayes.prototype.learn = function (tweet, tag) {
     
     var tokens = this.tokenizeText(tweet)
     
-    console.log(tweet.content)
+    //console.log(tweet.content)
 
     if (this.initCategory(tag)) console.log(tag+ " already exists")
     else console.log("New category: "+tag)
@@ -48,17 +51,43 @@ Naivebayes.prototype.learn = function (tweet, tag) {
         self.vocabSize++
 
         //increment word count for category
+        if (!self.wordCount[tag]) self.wordCount[tag]=0
         self.wordCount[tag]++
 
-        //add to the frequency count    
-        if (!self.wordFreqCount[tag]) self.wordFreqCount[tag] = {}
+        //add to the frequency count   
         if (!self.wordFreqCount[tag][token]) self.wordFreqCount[tag][token]=1
         else self.wordFreqCount[tag][token]++
     })
-    console.log(this.wordCount[tag])
+    //ghetto fix, look into this later...
+    if (this.wordFreqCount['']) this.wordFreqCount['']=0
 }
 
+Naivebayes.prototype.process = function (tweet) {
+    console.log("process") 
+    
+    var tokens = this.tokenizeText(tweet)
 
+    var tokenFreq = {}
+
+    tokens.forEach(function (token) {
+        if (tokenFreq[token]) tokenFreq[token]=0
+        tokenFreq++
+    })
+
+    var self = this
+        , categories = this.categories
+
+
+    //remember to use laplace+1 smoothing and sum of logs approach
+    for (i in categories) {
+        var category = categories[i]
+        categoryProbability = self.docCount[category]/self.totalDocCount  
+
+    }
+        console.log(categoryProbability)      
+    
+
+}
 
 Naivebayes.prototype.tokenizeText = function (text) {
 
