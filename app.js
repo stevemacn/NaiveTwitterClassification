@@ -6,7 +6,7 @@ var ntwitter = require('ntwitter')
     , count
     , params = {
         screen_name: '',
-        count: 5,
+        count: 200,
         include_rts: true
     }
     
@@ -33,15 +33,28 @@ nbc.process(getTweets("BBCWorld"))
  */
 
 var startProcessing = function () {
-    getTweets("BBCNews", nbc)
+    
+    console.log("=====================")
+    console.log("     PROCESSING      ")
+    console.log("=====================")
+    params.count = 10
+    //verify functionality
+    //getTweets("espn", nbc)
+    //getTweets("NPR", nbc)
+
+    //verify new sources
+    //getTweets("BBCNews", nbc) //conservative
+    getTweets("CNET", nbc) //tech
 }
 
 var startTraining = function (process) {
     count = 0
-    articlesLearned = 3
+    articlesLearned = 4 //Update this number as sources are added
     getTweets("espn", nbc, "sports") 
     getTweets("FoxNews", nbc, "conservative")
     getTweets("NPR", nbc, "liberal")
+    getTweets("WIRED", nbc, "technology")
+    
 }
 
 startTraining()
@@ -51,7 +64,7 @@ startTraining()
  */
 
 function twitterCallback (tag) {
-    nbc.displayResults(tag)
+    //nbc.displayResults(tag)
     if (++count == articlesLearned) {
         startProcessing() 
     }

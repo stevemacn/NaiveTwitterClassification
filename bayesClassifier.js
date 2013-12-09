@@ -10,7 +10,7 @@ function Naivebayes () {
     this.vocabulary = {}
     this.vocabSize = 0
     this.categories = {} 
-    
+    this.categoriesSize = 0
     //per category //function new person...
     this.docCount = {}
     this.wordCount = {}
@@ -28,14 +28,13 @@ Naivebayes.prototype.initCategory = function(category) {
     this.wordCount[category] = 0
     this.wordFreqCount[category] = {}
     this.categories[category]=category
+    this.categoriesSize++
     return false
 }
 
 Naivebayes.prototype.learn = function (tweet, tag) {
     
     var tokens = this.tokenizeText(tweet)
-    
-    //console.log(tweet.content)
 
     if (this.initCategory(tag)) console.log(tag+ " already exists")
     else console.log("New category: "+tag)
@@ -63,30 +62,49 @@ Naivebayes.prototype.learn = function (tweet, tag) {
 }
 
 Naivebayes.prototype.process = function (tweet) {
-    console.log("process") 
     
     var tokens = this.tokenizeText(tweet)
 
     var tokenFreq = {}
 
     tokens.forEach(function (token) {
-        if (tokenFreq[token]) tokenFreq[token]=0
-        tokenFreq++
+        if (!tokenFreq[token]) tokenFreq[token]=0
+        tokenFreq[token]++
     })
-
     var self = this
+        , catCount = 1
+        , chosen
+        , maxProbability=-1000
         , categories = this.categories
 
-
-    //remember to use laplace+1 smoothing and sum of logs approach
     for (i in categories) {
         var category = categories[i]
+            , count = tokens.length
+        //calculate initial category probabilty
         categoryProbability = self.docCount[category]/self.totalDocCount  
-
+        logCategoryProbability = Math.log(categoryProbability)
+        
+        tokens.forEach(function(token){
+            //Add one smoothing (1 rather than 0)
+            wordFreqCount = self.wordFreqCount[category][token] || 1    
+            wordCount = self.wordCount[category]
+            
+            //Calculate token probabilty (sum of logs)
+            var tokenProbability = Math.log(
+                wordFreqCount / (wordCount + self.vocabSize)
+            )
+            logCategoryProbability += tokenFreq[token] * tokenProbability
+            //Update chosen category with full probability
+            if (--count == 1) {
+                if (logCategoryProbability > maxProbability) {
+                    maxProbability = logCategoryProbability
+                    chosen=category
+                }
+            }
+            if (count ==1 && catCount== self.categoriesSize )console.log(chosen)  
+        })
+        catCount++    
     }
-        console.log(categoryProbability)      
-    
-
 }
 
 Naivebayes.prototype.tokenizeText = function (text) {
