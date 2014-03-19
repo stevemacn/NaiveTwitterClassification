@@ -36,8 +36,7 @@ Naivebayes.prototype.learn = function (tweet, tag) {
     
     var tokens = this.tokenizeText(tweet)
 
-    if (this.initCategory(tag)) console.log(tag+ " already exists")
-    else console.log("New category: "+tag)
+    if (!this.initCategory(tag)) console.log("New category: "+tag)
 
     this.docCount[tag]++
     this.totalDocCount++
@@ -67,6 +66,8 @@ Naivebayes.prototype.process = function (tweet) {
 
     var tokenFreq = {}
 
+    console.log(tweet.content)
+
     tokens.forEach(function (token) {
         if (!tokenFreq[token]) tokenFreq[token]=0
         tokenFreq[token]++
@@ -91,9 +92,10 @@ Naivebayes.prototype.process = function (tweet) {
             
             //Calculate token probabilty (sum of logs)
             var tokenProbability = Math.log(
-                wordFreqCount / (wordCount + self.vocabSize)
+                wordFreqCount  / (wordCount + self.vocabSize)
             )
-            logCategoryProbability += tokenFreq[token] * tokenProbability
+            //BUG: category size must be the same.
+            logCategoryProbability += tokenFreq[token] + tokenProbability
             //Update chosen category with full probability
             if (--count == 1) {
                 if (logCategoryProbability > maxProbability) {
@@ -101,8 +103,11 @@ Naivebayes.prototype.process = function (tweet) {
                     chosen=category
                 }
             }
-            if (count ==1 && catCount== self.categoriesSize )console.log(chosen)  
-        })
+            if (count ==1 && catCount== self.categoriesSize ) {
+                console.log(chosen)
+                console.log(maxProbability)
+            }
+            })
         catCount++    
     }
 }
