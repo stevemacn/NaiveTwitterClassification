@@ -15,9 +15,9 @@ Usage
 3. Open app.js and add the sources you want to process/train
 4. Running grunt runs the project
 
-* Change the number of training sources in the code if you add or remove any
+Change the number of training sources in the code if you add or remove any sources
 
-Example output (Categorizing tweets from NPR)
+Example output
 ---     
      NPR
 
@@ -38,8 +38,6 @@ Example output (Categorizing tweets from NPR)
      
      Never miss your fave NPR shows when you're on the go with this sweet portable audio system http://t.co/Ghr6bY41HF http://t.co/BUcTxyxqQs
      technology
-
-* Due to a lack of categories some have been incorrectly categorized (first for example)
 
     ESPN
 
